@@ -1,6 +1,6 @@
 import { Geometry, Mesh, Program, Texture, Transform, type OGLRenderingContext } from "ogl";
 import { createInstanceGrid } from "../core/webgl/createInstanceGrid";
-import { ASCII_CONFIG, CHROMA_KEY_CONFIG, MOUSE_INTERACTION_CONFIG, VIDEO_CONFIG } from "../config/constants";
+import { ASCII_CONFIG, CHROMA_KEY_CONFIG, HOVER_CONFIG, VIDEO_CONFIG } from "../config/constants";
 import { generateCharacterAtlas } from "../shaders/ascii/generateCharacterAtlas";
 import vertex from '../shaders/ascii/vertex.glsl';
 import fragment from '../shaders/ascii/fragment.glsl';
@@ -9,7 +9,8 @@ export interface AsciiGridInstance {
     mesh: Mesh
     resize: (viewportWidth: number, viewportHeight: number) => void
     setChromaKeyParams: (threshold: number, smoothness: number) => void
-    setMousePosition: (x: number, y: number) => void
+    setTrailTexture: (texture: Texture) => void
+    setCurrentTime: (time: number) => void
 }
 
 function createUnitQuadAttributes() {
@@ -80,6 +81,7 @@ export function createAsciiGrid(
         uniforms: {
             tMap: { value: videoTexture },
             tAtlas: { value: atlasTexture },
+            tTrail: { value: null },
             uResolution: { value: [viewportWidth, viewportHeight] },
             uVideoResolution: { value: [videoTexture.width || 1, videoTexture.height || 1] },
             uZoom: { value: VIDEO_CONFIG.zoom },
@@ -87,10 +89,11 @@ export function createAsciiGrid(
             uSmoothness: { value: CHROMA_KEY_CONFIG.smoothness },
             uCellSize: { value: ASCII_CONFIG.cellSize },
             uCharCount: { value: atlas.charCount },
-            uMouse: { value: [0, 0] },
-            uRepelRadius: { value: MOUSE_INTERACTION_CONFIG.repelRadius },
-            uRepelStrength: { value: MOUSE_INTERACTION_CONFIG.repelStrength },
-            uDepthStrength: { value: MOUSE_INTERACTION_CONFIG.depthStrength },
+            uScrambleCharCount: { value: atlas.scrambleCharCount },
+            uScrambleSpeed: { value: HOVER_CONFIG.scrambleSpeed },
+            uFlickerChance: { value: HOVER_CONFIG.flickerChance },
+            uFlickerSpeed: { value: HOVER_CONFIG.flickerSpeed },
+            uCurrentTime: { value: 0 },
         },
     });
 
@@ -114,12 +117,16 @@ export function createAsciiGrid(
     }
 
     const setChromaKeyParams = (threshold: number, smoothness: number) => {
-        program.uniforms.uThreshold.value = threshold;
-        program.uniforms.uSmoothness.value = smoothness;
+        program.uniforms.uThreshold.value = threshold
+        program.uniforms.uSmoothness.value = smoothness
     };
 
-    const setMousePosition = (x: number, y: number) => {
-        program.uniforms.uMouse.value = [x, y];
+    const setTrailTexture = (texture: Texture) => {
+        program.uniforms.tTrail.value = texture
+    }
+
+    const setCurrentTime = (time: number) => {
+        program.uniforms.uCurrentTime.value = time
     };
 
     return {
@@ -128,7 +135,8 @@ export function createAsciiGrid(
         },
         resize,
         setChromaKeyParams,
-        setMousePosition
+        setTrailTexture,
+        setCurrentTime
     }
 }
 

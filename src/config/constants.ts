@@ -28,8 +28,8 @@ export interface VideoConfig {
 }
 
 export const VIDEO_CONFIG: VideoConfig = {
-    src: 'videos/003.mp4',
-    zoom: 1.3
+    src: 'videos/001.mp4',
+    zoom: 1.25
 };
 
 export interface ChromaKeyConfig {
@@ -46,6 +46,7 @@ export const CHROMA_KEY_CONFIG: ChromaKeyConfig = {
 
 export interface AsciiConfig {
     charset: string
+    scrambleCharset: string
     cellSize: number
     atlasCharSize: number
     fontFamily: string
@@ -53,19 +54,44 @@ export interface AsciiConfig {
 
 export const ASCII_CONFIG: AsciiConfig = {
     charset: " .:-=+*#%@",
-    cellSize: 8,
+    scrambleCharset: "01",
+    cellSize: 12,
     atlasCharSize: 24,
     fontFamily: "monospace"
 }
 
-export interface MouseInteractionConfig {
-    repelRadius: number
-    repelStrength: number
-    depthStrength: number
+export interface HoverConfig {
+    scrambleSpeed: number
+    flickerChance: number
+    flickerSpeed: number
 }
 
-export const MOUSE_INTERACTION_CONFIG: MouseInteractionConfig = {
-    repelRadius: 100,
-    repelStrength: 20,
-    depthStrength: 50
+export const HOVER_CONFIG: HoverConfig = {
+    scrambleSpeed: 1,
+    flickerChance: 0.3,
+    flickerSpeed: 1
+}
+
+export interface TrailConfig {
+    resolution: number
+    decay: number
+    paintRadius: number
+    paintSoftness: number
+}
+
+export const TRAIL_CONFIG: TrailConfig = {
+    resolution: 32,
+    decay: 0.05,
+    paintRadius: 0.04,
+    paintSoftness: 0.02
+}
+
+export interface PostProcessingConfig {
+    chromaticAberration: number
+    noiseAmount: number
+}
+
+export const POST_PROCESSING_CONFIG: PostProcessingConfig = {
+    chromaticAberration: 0.03,
+    noiseAmount: 0.1
 }

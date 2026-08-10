@@ -3,7 +3,7 @@ export interface VideoInstance {
     ready: Promise<HTMLVideoElement>
 }
 
-export function loadVideo(src: string): VideoInstance {
+export function loadVideo(src: string, onProgress?: (percent: number) => void): VideoInstance {
     const video = document.createElement("video")
 
     video.src = src
@@ -12,8 +12,24 @@ export function loadVideo(src: string): VideoInstance {
     video.playsInline = true
     video.autoplay = true
 
+    const reportProgress = () => {
+        if (!onProgress || !video.duration || isNaN(video.duration)) return
+        if (video.buffered.length === 0) return
+
+        const bufferedEnd = video.buffered.end(0)
+        const percent = Math.min(100, (bufferedEnd / video.duration) * 100)
+
+        onProgress(percent)
+    }
+
+    video.addEventListener("progress", reportProgress)
+    video.addEventListener("loadedmetadata", reportProgress)
+
     const ready = new Promise<HTMLVideoElement>((resolve, reject) => {
-        video.addEventListener("loadeddata", () => resolve(video), { once: true })
+        video.addEventListener("loadeddata", () => {
+            onProgress?.(100)
+            resolve(video)
+        }, { once: true })
         video.addEventListener("error", () => reject(new Error(`Failed To Load Video: ${src}`)), { once: true })
     })
 

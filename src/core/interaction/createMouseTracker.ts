@@ -1,6 +1,5 @@
 export interface MouseTrackerInstance {
     position: { x: number, y: number }
-    velocity: number
     update: () => void
     destroy: () => void
 }
@@ -14,12 +13,7 @@ export function createMouseTracker(container: HTMLElement): MouseTrackerInstance
     let currentY = OFFSCREEN
     let hasMoved = false
 
-    let previousX = OFFSCREEN
-    let previousY = OFFSCREEN
-    let lastUpdatedTime = performance.now()
-
     const position = { x: OFFSCREEN, y: OFFSCREEN }
-    let velocity = 0
 
     const handleMouseMove = (event: MouseEvent) => {
         const rect = container.getBoundingClientRect()
@@ -32,8 +26,6 @@ export function createMouseTracker(container: HTMLElement): MouseTrackerInstance
         if (!hasMoved) {
             currentX = targetX;
             currentY = targetY;
-            previousX = targetX;
-            previousY = targetY;
             hasMoved = true;
         }
     }
@@ -43,24 +35,9 @@ export function createMouseTracker(container: HTMLElement): MouseTrackerInstance
     const update = () => {
         if (!hasMoved) return;
 
-        const now = performance.now()
-        const deltaSeconds = (now - lastUpdatedTime) / 1000
-        lastUpdatedTime = now
-
         const smoothing  = 0.15
         currentX += (targetX - currentX) * smoothing
         currentY += (targetY - currentY) * smoothing
-
-        if (deltaSeconds > 0) {
-            const dx = currentX - previousX
-            const dy = currentY - previousY
-            const distance = Math.sqrt(dx * dx + dy * dy)
-
-            velocity = distance / deltaSeconds
-        }
-
-        previousX = currentX
-        previousY = currentY
 
         position.x = currentX
         position.y = currentY
@@ -70,5 +47,5 @@ export function createMouseTracker(container: HTMLElement): MouseTrackerInstance
         container.removeEventListener("mousemove", handleMouseMove)
     }
 
-    return { position, velocity, update, destroy }
+    return { position, update, destroy }
 }
