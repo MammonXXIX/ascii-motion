@@ -12,7 +12,6 @@ export default function Canvas() {
             <LoadingScreen
                 progress={loadProgress}
                 isReady={isReady}
-                revealTargetRef={containerRef}
             />
         </>
     )

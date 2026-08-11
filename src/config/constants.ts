@@ -28,7 +28,7 @@ export interface VideoConfig {
 }
 
 export const VIDEO_CONFIG: VideoConfig = {
-    src: 'videos/001.mp4',
+    src: 'videos/004.mp4',
     zoom: 1.25
 };
 
@@ -56,7 +56,7 @@ export const ASCII_CONFIG: AsciiConfig = {
     charset: " .:-=+*#%@",
     scrambleCharset: "01",
     cellSize: 12,
-    atlasCharSize: 24,
+    atlasCharSize: 64,
     fontFamily: "monospace"
 }
 
@@ -92,6 +92,6 @@ export interface PostProcessingConfig {
 }
 
 export const POST_PROCESSING_CONFIG: PostProcessingConfig = {
-    chromaticAberration: 0.03,
-    noiseAmount: 0.1
+    chromaticAberration: 0.02,
+    noiseAmount: 0.25
 }
